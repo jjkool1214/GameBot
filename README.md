@@ -10,6 +10,7 @@
 - Java
 - JDA (Java Discord API)
 - Open Source PokeAPI
+- PokeAPI Wrapper for Java by 
 
 
 This is created By Jaysen Stolarz on January 14th of 2025
