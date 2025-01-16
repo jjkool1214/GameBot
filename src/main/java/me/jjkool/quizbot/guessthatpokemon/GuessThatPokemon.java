@@ -1,6 +1,7 @@
 package me.jjkool.quizbot.guessthatpokemon;
 
 import com.github.oscar0812.pokeapi.models.pokemon.Pokemon;
+import com.github.oscar0812.pokeapi.models.pokemon.PokemonForm;
 import com.github.oscar0812.pokeapi.utils.Client;
 import me.jjkool.quizbot.QuizBot;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -15,6 +16,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,6 +38,7 @@ public class GuessThatPokemon {
     public static void game(@NotNull SlashCommandInteractionEvent e) {
         ANSWER_POKEMON = getRandomPokemon();
         CHANNEL = e.getChannel().asTextChannel();
+        System.out.println(ANSWER_POKEMON);
         ImageProxy imageProxy = new ImageProxy(ANSWER_POKEMON.getSprites().getFrontDefault());
         try{
             FileUpload file = FileUpload.fromData(imageProxy.download().get(), "nunya.png");

@@ -38,7 +38,7 @@ public class QuizBot {
     }
 
     public static Guild getGuild() {
-        return JDA_BOT.getGuildById("1144410123150831716");
+        return JDA_BOT.getGuildById("1266120602406879234");
     }
 
 

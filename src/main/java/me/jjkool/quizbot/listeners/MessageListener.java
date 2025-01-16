@@ -11,27 +11,29 @@ public class MessageListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent e) {
-        if (!GuessThatPokemon.IN_GAME){
-            return;
+        if (GuessThatPokemon.IN_GAME){
+            if (e.getAuthor().isBot()) return;
+
+            if(!e.getChannel().equals(GuessThatPokemon.CHANNEL)){
+                return;
+            }
+
+            String message = e.getMessage().getContentRaw();
+            if(!message.equalsIgnoreCase(GuessThatPokemon.ANSWER_POKEMON.getName())){
+                System.out.println("erm....");
+                return;
+            }
+
+            System.out.println("WHATTTT");
+            e.getChannel().sendMessage("Good job, " + e.getAuthor().getName() + " got it right!").queue();
+
+            GuessThatPokemon.IN_GAME = false;
+            GuessThatPokemon.TIMER.cancel();
         }
 
-        if (e.getAuthor().isBot()) return;
 
-        if(!e.getChannel().equals(GuessThatPokemon.CHANNEL)){
-            return;
-        }
 
-        String message = e.getMessage().getContentRaw();
-        if(!message.equalsIgnoreCase(GuessThatPokemon.ANSWER_POKEMON.getName())){
-            System.out.println("erm....");
-            return;
-        }
 
-        System.out.println("WHATTTT");
-        e.getChannel().sendMessage("Good job, " + e.getAuthor().getName() + " got it right!").queue();
-
-        GuessThatPokemon.IN_GAME = false;
-        GuessThatPokemon.TIMER.cancel();
 
     }
 }
