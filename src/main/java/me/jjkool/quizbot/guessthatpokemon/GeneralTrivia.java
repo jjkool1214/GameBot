@@ -2,6 +2,7 @@ package me.jjkool.quizbot.guessthatpokemon;
 
 
 
+import me.jjkool.quizbot.listeners.CommandListener;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -54,6 +55,7 @@ public class GeneralTrivia {
                         this.cancel();
                         timer.cancel();
                         inPlay = false;
+                        CommandListener.activeQuizChannel = null;
                         return;
 
                     }
@@ -63,13 +65,13 @@ public class GeneralTrivia {
                     System.out.println(question.toString());
                     currAnswer = URLDecoder.decode(question.getString("correct_answer"), StandardCharsets.UTF_8);
                     optionNumbers.add(URLDecoder.decode(question.getString("correct_answer"), StandardCharsets.UTF_8));
-                    optionNumbers.add(question.getJSONArray("incorrect_answers").getString(0));
-                    optionNumbers.add(question.getJSONArray("incorrect_answers").getString(1));
-                    optionNumbers.add(question.getJSONArray("incorrect_answers").getString(2));
+                    optionNumbers.add(URLDecoder.decode(question.getJSONArray("incorrect_answers").getString(0), StandardCharsets.UTF_8));
+                    optionNumbers.add(URLDecoder.decode(question.getJSONArray("incorrect_answers").getString(1), StandardCharsets.UTF_8));
+                    optionNumbers.add(URLDecoder.decode(question.getJSONArray("incorrect_answers").getString(2), StandardCharsets.UTF_8));
 
                     Collections.shuffle(optionNumbers);
                     answers = optionNumbers;
-                    e.getChannel().asTextChannel().sendMessage(URLDecoder.decode(question.getString("question"), StandardCharsets.UTF_8)
+                    e.getChannel().asTextChannel().sendMessage(String.valueOf(questionNumber + 1) + "/10  " + URLDecoder.decode(question.getString("question"), StandardCharsets.UTF_8)
                                     + " Options are as follows:"
                                     + "\nA. " + answers.get(0)
                                     + "\nB. " + answers.get(1)
@@ -93,7 +95,7 @@ public class GeneralTrivia {
         JSONObject jsonObject = null;
         HttpClient client = HttpClient.newHttpClient();
 
-        HttpRequest request = HttpRequest.newBuilder(URI.create("https://opentdb.com/api.php?type=multiple&amount=10&difficulty=" + difficulty))
+        HttpRequest request = HttpRequest.newBuilder(URI.create("https://opentdb.com/api.php?encode=url3986&type=multiple&amount=10&difficulty=" + difficulty))
                         .header("accept", "application/json").GET().build();
         try{
 
@@ -119,7 +121,7 @@ public class GeneralTrivia {
             // two keys
             public int compare(K k1, K k2)
             {
-                return map.get(k1).compareTo(map.get(k2));
+                return map.get(k2).compareTo(map.get(k1));
             }
 
         };

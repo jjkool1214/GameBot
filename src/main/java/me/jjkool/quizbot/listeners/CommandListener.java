@@ -21,7 +21,7 @@ import java.util.TimerTask;
 
 public class CommandListener extends ListenerAdapter {
 
-    public static Channel activeQuizChannel;
+    public static Channel activeQuizChannel = null;
 
     public static boolean gameStarted = false;
 
@@ -59,10 +59,17 @@ public class CommandListener extends ListenerAdapter {
         }
 
         if(e.getFullCommandName().equals("quiz")){
-            if(GeneralTrivia.inPlay){
-                e.reply("So um... theres a game in progress in this channel lol").queue();
+            if(!e.getChannel().equals(activeQuizChannel) && activeQuizChannel != null){
+                e.reply("Sorry, but there is a game happening elsewhere!").setEphemeral(true).queue();
+                return;
             }
+            if(e.getChannel().equals(activeQuizChannel) && GeneralTrivia.inPlay){
+                e.reply("So um... theres a game in progress in this channel lol").setEphemeral(true).queue();
+                return;
+            }
+            GeneralTrivia.inPlay = true;
             try {
+
                 activeQuizChannel = e.getChannel();
                 e.reply("Starting the game! choose your difficulty").addActionRow(StringSelectMenu.create("choose-difficulty")
                         .addOption("Easy", "easy", "Sets the difficulty to easy")
@@ -73,10 +80,14 @@ public class CommandListener extends ListenerAdapter {
                     @Override
                     public void run(){
                         System.out.println(gameStarted);
+                        if(!e.getChannel().equals(activeQuizChannel)){
+                            return;
+                        }
                         if(!gameStarted){
                             e.getChannel().asTextChannel().sendMessage("Nothing was selected! cancelling game").queue();
                             activeQuizChannel = null;
                         }
+
                     }
                 }, 10000);
             } catch (Exception ex) {
@@ -91,7 +102,7 @@ public class CommandListener extends ListenerAdapter {
     public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent e) {
 
 
-        GeneralTrivia.inPlay = true;
+
         System.out.println("Select interaction works!");
         if(!e.getChannel().equals(activeQuizChannel)){
             return;
@@ -107,6 +118,7 @@ public class CommandListener extends ListenerAdapter {
         System.out.println("Same interactable!");
 
         System.out.println("Game is starting!");
+        GeneralTrivia.inPlay = true;
         gameStarted = true;
         e.reply("Difficulty :" + e.getValues().getFirst()+ "\nGame..... Start!").queue();
         GeneralTrivia.playTrivia(e);
@@ -201,7 +213,7 @@ public class CommandListener extends ListenerAdapter {
         }
 
         System.out.println(correctAnswer);
-        e.reply("You have selected " + GeneralTrivia.answers.get(chosenAnswer) + " and you got it " + (correctAnswer ? " right!" : " wrong :(")).setEphemeral(true).queue();
+        e.reply("You have selected " + GeneralTrivia.answers.get(chosenAnswer) + " and you got it" + (correctAnswer ? " right!" : " wrong :(. the correct answer was " + GeneralTrivia.currAnswer)).setEphemeral(true).queue();
     }
 
 
