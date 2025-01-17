@@ -1,4 +1,4 @@
-# GameBot
+# QuizBot
 
 # This is a bot for Java and making miscellaneous Quiz games.
 
