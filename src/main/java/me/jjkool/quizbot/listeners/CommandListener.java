@@ -3,6 +3,8 @@ package me.jjkool.quizbot.listeners;
 import me.jjkool.quizbot.QuizBot;
 import me.jjkool.quizbot.guessthatpokemon.GeneralTrivia;
 import me.jjkool.quizbot.guessthatpokemon.GuessThatPokemon;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -57,8 +59,8 @@ public class CommandListener extends ListenerAdapter {
         }
 
         if(e.getFullCommandName().equals("quiz")){
-            if(e.getChannel().equals(activeQuizChannel)){
-                e.reply("So um... theres a game in progress in this channel lol");
+            if(GeneralTrivia.inPlay){
+                e.reply("So um... theres a game in progress in this channel lol").queue();
             }
             try {
                 activeQuizChannel = e.getChannel();
@@ -87,6 +89,9 @@ public class CommandListener extends ListenerAdapter {
 
     @Override
     public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent e) {
+
+
+        GeneralTrivia.inPlay = true;
         System.out.println("Select interaction works!");
         if(!e.getChannel().equals(activeQuizChannel)){
             return;
@@ -109,7 +114,94 @@ public class CommandListener extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
+        if(!GeneralTrivia.inPlay){
+            e.reply("Sorry, this is from and old game. you should start a new game!").queue();
+            return;
+        }
 
+        if(!e.getChannel().equals(activeQuizChannel)){
+            return;
+        }
+
+        if(!e.getMessage().getId().equals(GeneralTrivia.currMessageID)){
+            e.reply("um so... wrong question...").setEphemeral(true).queue();
+            return;
+        }
+
+        Member author = e.getMember();
+        if(GeneralTrivia.hasAnswered.containsKey(author.getEffectiveName())){
+            e.reply("You've already attempted to answer this question!").setEphemeral(true).queue();
+            return;
+        }
+        GeneralTrivia.hasAnswered.put(author.getEffectiveName(), true);
+        System.out.println(author);
+        System.out.println(author.getAsMention());
+        System.out.println(e.getInteraction().getMessage());
+        boolean correctAnswer = false;
+        int chosenAnswer = 0;
+        System.out.println(e.getButton().getId());
+
+        switch (e.getButton().getId()){
+            case "A-button":
+                if(GeneralTrivia.answers.getFirst().equals(GeneralTrivia.currAnswer)){
+                    correctAnswer = true;
+                    System.out.println("Are they in the mapping? : " + GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName()));
+                    if(GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName())){
+                        GeneralTrivia.scoreTracking.put(author.getEffectiveName(), GeneralTrivia.scoreTracking.get(author.getEffectiveName())+1);
+                        System.out.println(author.getEffectiveName() + " " + GeneralTrivia.scoreTracking.get(author.getEffectiveName()));
+                    } else {
+                        GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 1);
+                    }
+                }
+                break;
+            case "B-button":
+                if(GeneralTrivia.answers.get(1).equals(GeneralTrivia.currAnswer)){
+                    correctAnswer = true;
+                    System.out.println("Are they in the mapping? : " + GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName()));
+                    if(GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName())){
+                        GeneralTrivia.scoreTracking.put(author.getEffectiveName(), GeneralTrivia.scoreTracking.get(author.getEffectiveName())+1);
+                        System.out.println(author.getEffectiveName() + " " + GeneralTrivia.scoreTracking.get(author.getEffectiveName()));
+                    } else {
+                        GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 1);
+                    }
+                }
+                chosenAnswer = 1;
+                break;
+            case "C-button":
+                if(GeneralTrivia.answers.get(2).equals(GeneralTrivia.currAnswer)){
+                    correctAnswer = true;
+                    System.out.println("Are they in the mapping? : " + GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName()));
+                    if(GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName())){
+                        GeneralTrivia.scoreTracking.put(author.getEffectiveName(), GeneralTrivia.scoreTracking.get(author.getEffectiveName())+1);
+                        System.out.println(author.getEffectiveName() + " " + GeneralTrivia.scoreTracking.get(author.getEffectiveName()));
+                    } else {
+                        GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 1);
+                    }
+
+                }
+                chosenAnswer = 2;
+                break;
+            case "D-button":
+                if(GeneralTrivia.answers.get(3).equals(GeneralTrivia.currAnswer)){
+                    correctAnswer = true;
+                    System.out.println("Are they in the mapping? : " + GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName()));
+                    if(GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName())){
+                        GeneralTrivia.scoreTracking.put(author.getEffectiveName(), GeneralTrivia.scoreTracking.get(author.getEffectiveName())+1);
+                        System.out.println(author.getEffectiveName() + " " + GeneralTrivia.scoreTracking.get(author.getEffectiveName()));
+                    } else {
+                        GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 1);
+                    }
+
+                }
+                chosenAnswer = 3;
+                break;
+        }
+        if(!GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName())){
+            GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 0);
+        }
+
+        System.out.println(correctAnswer);
+        e.reply("You have selected " + GeneralTrivia.answers.get(chosenAnswer) + " and you got it " + (correctAnswer ? " right!" : " wrong :(")).setEphemeral(true).queue();
     }
 
 
