@@ -34,7 +34,6 @@ public class GeneralTrivia {
 
     public static void playTrivia(@NotNull StringSelectInteractionEvent e){
         JSONArray questions = getQuestions(e.getValues().getFirst()).getJSONArray("results");
-        System.out.println(questions.toString());
         scoreTracking = new TreeMap<>();
 
 
@@ -43,7 +42,6 @@ public class GeneralTrivia {
             timer.schedule(new TimerTask() {
                 public void run() {
                     hasAnswered.clear();
-                    System.out.println(questionNumber);
                     if(questionNumber >= 10){
                         TreeMap<String, Integer> sortedMap = valueSort(scoreTracking);
                         StringBuilder output = new StringBuilder();
@@ -56,13 +54,13 @@ public class GeneralTrivia {
                         timer.cancel();
                         inPlay = false;
                         CommandListener.activeQuizChannel = null;
+                        questionNumber = 0;
                         return;
 
                     }
                     ArrayList<String> optionNumbers = new ArrayList<>();
                     JSONObject question = questions.getJSONObject(questionNumber);
 
-                    System.out.println(question.toString());
                     currAnswer = URLDecoder.decode(question.getString("correct_answer"), StandardCharsets.UTF_8);
                     optionNumbers.add(URLDecoder.decode(question.getString("correct_answer"), StandardCharsets.UTF_8));
                     optionNumbers.add(URLDecoder.decode(question.getJSONArray("incorrect_answers").getString(0), StandardCharsets.UTF_8));
@@ -81,7 +79,7 @@ public class GeneralTrivia {
                                     Button.primary("A-button", "A"), Button.primary("B-button", "B"), Button.primary("C-button", "C"), Button.primary("D-button", "D")
                             ).queue(message -> currMessageID = message.getId());
 
-                    System.out.println(optionNumbers.toString() + "\n" + String.valueOf(questionNumber));
+
                     questionNumber++;
                 }
             }, 0, 15000);
@@ -101,7 +99,6 @@ public class GeneralTrivia {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             jsonObject = new JSONObject(response.body());
-            System.out.println(jsonObject.get("results").toString());
 
         } catch (Exception e) {
             e.printStackTrace();

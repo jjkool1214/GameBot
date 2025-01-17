@@ -34,18 +34,15 @@ public class CommandListener extends ListenerAdapter {
     }
 
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent e){
-        System.out.println("Started");
 
         if(e.getChannel().equals(ChannelType.VOICE)){
 
         }
 
-        System.out.println("Is a text channel");
         if(e.getChannel().asTextChannel().getId().equals("1145498800652304554")) {
             e.reply(":x: You cannot use that command here :x:").queue();
             return;
         }
-        System.out.println("Is good");
 
 
         if(e.getFullCommandName().equals("gtp")){
@@ -53,9 +50,7 @@ public class CommandListener extends ListenerAdapter {
                 e.reply("There is a game in progress, what the skib!").queue();
                 return;
             }
-            System.out.println(e.getCommandString());
             GuessThatPokemon.game(e);
-            System.out.println("Is replied");
         }
 
         if(e.getFullCommandName().equals("quiz")){
@@ -79,7 +74,6 @@ public class CommandListener extends ListenerAdapter {
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run(){
-                        System.out.println(gameStarted);
                         if(!e.getChannel().equals(activeQuizChannel)){
                             return;
                         }
@@ -103,21 +97,16 @@ public class CommandListener extends ListenerAdapter {
 
 
 
-        System.out.println("Select interaction works!");
         if(!e.getChannel().equals(activeQuizChannel)){
             return;
         }
 
-        System.out.println("Same channel");
 
-        System.out.println(e.getInteraction().getSelectMenu().getId());
         if(!e.getInteraction().getSelectMenu().getId().equals("choose-difficulty")){
             return;
         }
 
-        System.out.println("Same interactable!");
 
-        System.out.println("Game is starting!");
         GeneralTrivia.inPlay = true;
         gameStarted = true;
         e.reply("Difficulty :" + e.getValues().getFirst()+ "\nGame..... Start!").queue();
@@ -146,21 +135,15 @@ public class CommandListener extends ListenerAdapter {
             return;
         }
         GeneralTrivia.hasAnswered.put(author.getEffectiveName(), true);
-        System.out.println(author);
-        System.out.println(author.getAsMention());
-        System.out.println(e.getInteraction().getMessage());
         boolean correctAnswer = false;
         int chosenAnswer = 0;
-        System.out.println(e.getButton().getId());
 
         switch (e.getButton().getId()){
             case "A-button":
                 if(GeneralTrivia.answers.getFirst().equals(GeneralTrivia.currAnswer)){
                     correctAnswer = true;
-                    System.out.println("Are they in the mapping? : " + GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName()));
                     if(GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName())){
                         GeneralTrivia.scoreTracking.put(author.getEffectiveName(), GeneralTrivia.scoreTracking.get(author.getEffectiveName())+1);
-                        System.out.println(author.getEffectiveName() + " " + GeneralTrivia.scoreTracking.get(author.getEffectiveName()));
                     } else {
                         GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 1);
                     }
@@ -169,10 +152,8 @@ public class CommandListener extends ListenerAdapter {
             case "B-button":
                 if(GeneralTrivia.answers.get(1).equals(GeneralTrivia.currAnswer)){
                     correctAnswer = true;
-                    System.out.println("Are they in the mapping? : " + GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName()));
                     if(GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName())){
                         GeneralTrivia.scoreTracking.put(author.getEffectiveName(), GeneralTrivia.scoreTracking.get(author.getEffectiveName())+1);
-                        System.out.println(author.getEffectiveName() + " " + GeneralTrivia.scoreTracking.get(author.getEffectiveName()));
                     } else {
                         GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 1);
                     }
@@ -182,10 +163,8 @@ public class CommandListener extends ListenerAdapter {
             case "C-button":
                 if(GeneralTrivia.answers.get(2).equals(GeneralTrivia.currAnswer)){
                     correctAnswer = true;
-                    System.out.println("Are they in the mapping? : " + GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName()));
                     if(GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName())){
                         GeneralTrivia.scoreTracking.put(author.getEffectiveName(), GeneralTrivia.scoreTracking.get(author.getEffectiveName())+1);
-                        System.out.println(author.getEffectiveName() + " " + GeneralTrivia.scoreTracking.get(author.getEffectiveName()));
                     } else {
                         GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 1);
                     }
@@ -196,10 +175,8 @@ public class CommandListener extends ListenerAdapter {
             case "D-button":
                 if(GeneralTrivia.answers.get(3).equals(GeneralTrivia.currAnswer)){
                     correctAnswer = true;
-                    System.out.println("Are they in the mapping? : " + GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName()));
                     if(GeneralTrivia.scoreTracking.containsKey(author.getEffectiveName())){
                         GeneralTrivia.scoreTracking.put(author.getEffectiveName(), GeneralTrivia.scoreTracking.get(author.getEffectiveName())+1);
-                        System.out.println(author.getEffectiveName() + " " + GeneralTrivia.scoreTracking.get(author.getEffectiveName()));
                     } else {
                         GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 1);
                     }
@@ -212,7 +189,6 @@ public class CommandListener extends ListenerAdapter {
             GeneralTrivia.scoreTracking.put(author.getEffectiveName(), 0);
         }
 
-        System.out.println(correctAnswer);
         e.reply("You have selected " + GeneralTrivia.answers.get(chosenAnswer) + " and you got it" + (correctAnswer ? " right!" : " wrong :(. the correct answer was " + GeneralTrivia.currAnswer)).setEphemeral(true).queue();
     }
 
